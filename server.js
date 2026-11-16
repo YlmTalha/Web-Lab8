@@ -83,6 +83,18 @@ app.get('/api/stats', (req, res) => {
   res.json({ requestsServed });
 });
 
+// ----- 404 fallback -----
+// Registered last, so it only runs when no route above matched.
+// app.use without a path matches every method and path (Express 5 has no '*').
+
+app.use((req, res) => {
+  const isApi = req.path === '/api' || req.path.startsWith('/api/');
+  if (isApi) {
+    return res.status(404).json({ error: 'Not found' });
+  }
+  res.status(404).type('text/plain').send(`Page not found: ${req.originalUrl}`);
+});
+
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
