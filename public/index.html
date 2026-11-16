@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Biruni Web Studies - Info Server</title>
+  </head>
+  <body>
+    <header>
+      <h1>Biruni Web Studies</h1>
+      <p>
+        Biruni Web Studies is a made-up two-year programme about building websites and web servers.
+        Students learn HTML, CSS and JavaScript first, then React on the front end and Node.js with Express on the back end.
+        This page is served by our own Express server. Use the buttons below to try every API route and see what the server answers.
+      </p>
+    </header>
+
+    <main>
+      <section class="buttons">
+        <button data-method="GET" data-path="/api/courses">GET /api/courses</button>
+        <button data-method="GET" data-path="/api/status">GET /api/status</button>
+        <button data-method="GET" data-path="/api/headers">GET /api/headers</button>
+        <button data-method="POST" data-path="/api/subscribe">POST /api/subscribe</button>
+        <button data-method="GET" data-path="/api/admin">GET /api/admin</button>
+        <button data-method="GET" data-path="/api/stats">GET /api/stats</button>
+        <button data-method="GET" data-path="/api/does-not-exist">GET /api/does-not-exist</button>
+      </section>
+
+      <section>
+        <h2>Response</h2>
+        <p id="status">Click a button to send a request.</p>
+        <pre id="output"></pre>
+      </section>
+    </main>
+  </body>
+</html>

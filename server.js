@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'node:path';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -31,6 +32,11 @@ function requestCounter(req, res, next) {
 
 app.use(logger);
 app.use(requestCounter);
+
+// ----- Static files -----
+// import.meta.dirname is the folder of this file, so public/ is found
+// no matter which folder the server is started from. GET / serves public/index.html.
+app.use(express.static(path.join(import.meta.dirname, 'public')));
 
 // ----- Routes -----
 
