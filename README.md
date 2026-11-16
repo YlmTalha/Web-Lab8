@@ -8,8 +8,8 @@ It serves a web page from `public/`, offers several API routes, logs every reque
 Requirements: Node.js (current LTS).
 
 ```bash
-git clone https://github.com/YlmTalha/<repo-name>.git
-cd <repo-name>
+git clone https://github.com/YlmTalha/Web-Lab8.git
+cd Web-Lab8
 npm install        # installs express from package.json / package-lock.json
 npm start          # node server.js
 npm run dev        # node --watch server.js (restarts on file changes)
@@ -57,7 +57,82 @@ The order in `server.js` is: **logger → request counter → `express.static` �
 
 ## Testing evidence (curl)
 
-_TODO: paste curl output_
+Output of `curl --include` against the running server (`npm run dev`). It covers a successful JSON response (200), the redirect (301), a 404 on an `/api` path (JSON), a 404 on a page path (text), the 403 response and the 201 response.
+
+```text
+$ curl --include http://localhost:3000/api/courses
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 208
+ETag: W/"d0-jk7GTXGJNG3B11UjNcudPpzj63c"
+Date: Mon, 16 Nov 2026 17:19:02 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+[{"id":1,"title":"Web Programming","credits":6},{"id":2,"title":"Operating Systems","credits":6},{"id":3,"title":"Database Management Systems","credits":5},{"id":4,"title":"Software Engineering","credits":5}]
+
+$ curl --include http://localhost:3000/old-page
+HTTP/1.1 301 Moved Permanently
+X-Powered-By: Express
+Location: /hello
+Vary: Accept
+Content-Type: text/plain; charset=utf-8
+Content-Length: 40
+Date: Mon, 16 Nov 2026 17:19:02 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Moved Permanently. Redirecting to /hello
+
+$ curl --include http://localhost:3000/api/nope
+HTTP/1.1 404 Not Found
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 21
+ETag: W/"15-bm7tJgu8FHlq5QU+Y6gDxOGPfRc"
+Date: Mon, 16 Nov 2026 17:19:02 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"error":"Not found"}
+
+$ curl --include http://localhost:3000/nope
+HTTP/1.1 404 Not Found
+X-Powered-By: Express
+Content-Type: text/plain; charset=utf-8
+Content-Length: 21
+ETag: W/"15-o+niRM6mpkOxJ7mcVvkkpvwkLEI"
+Date: Mon, 16 Nov 2026 17:19:02 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Page not found: /nope
+
+$ curl --include http://localhost:3000/api/admin
+HTTP/1.1 403 Forbidden
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 21
+ETag: W/"15-TLNzmZqKxaTuFdX/dVWWPBu44/c"
+Date: Mon, 16 Nov 2026 17:19:02 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"error":"Forbidden"}
+
+$ curl --include -X POST http://localhost:3000/api/subscribe
+HTTP/1.1 201 Created
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 19
+ETag: W/"13-oWAPIqDXuocNexKhPYW9ayyk98c"
+Date: Mon, 16 Nov 2026 17:19:02 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"subscribed":true}
+```
 
 
 ## Reasoning questions
