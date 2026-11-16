@@ -59,36 +59,37 @@ The order in `server.js` is: **logger → request counter → `express.static` �
 
 _TODO: paste curl output_
 
+
 ## Reasoning questions
 
 ### Route order
-_TODO_
+Experiment: I moved the 404 fallback to the top, right after the two middlewares. Every request then returned 404: `/` gave "Page not found: /", `/hello` gave "Page not found: /hello" and `/api/courses` gave `{"error":"Not found"}`. Express checks middleware and routes in the order they are registered. `app.use` without a path matches every request and sends a response without calling `next()`, so the real routes below it were never reached. That is why the fallback must be registered last.
 
 ### Middleware
-_TODO_
+Experiment: I removed `next()` from the logger. The server still printed the log line (for example `GET /hello`), but the browser kept loading and never got an answer; with curl the request timed out. The logger neither sent a response nor passed the request on, so the request was left hanging. Every middleware must either send a response or call `next()`.
 
 ### Status codes
-_TODO_
+`POST /api/subscribe` answers 201 Created because the request created something new (a subscription), and 201 says exactly that, while 200 only means "OK". A missing page must be a 404 because programs read the status code, not the text: browsers, search engines and `fetch` (`res.ok`) would treat a 200 as a success, and a search engine could even index the error page.
 
 ### Configuration
-_TODO_
+The port comes from `process.env.PORT` because the environment should decide it, not the code. Hosting platforms (for example Render or Heroku) give the app a port through this variable, and port 3000 may already be in use on another machine. With the fallback (`|| 3000`) the server still works locally without any setup.
 
 ### Dependencies
-_TODO_
+`node_modules` is not committed because it is very large and can be rebuilt exactly from `package.json` and `package-lock.json`. After cloning, a teammate only has to run `npm install` and then `npm start` (or `npm run dev`).
 
 ### Same origin
-_TODO_
+If `index.html` is opened directly from disk (`file://`), relative URLs like `/api/courses` point to files on the disk, not to the server, so the buttons fail. Even with a full URL like `http://localhost:3000/api/courses`, the page and the API would have different origins, and the browser would block reading the response unless the server allowed it with CORS headers. This restriction is called the Same-Origin Policy.
 
 ## Self-study notes
 
 ### Node version and running time of the process
-_TODO_
+The Node.js `process` object has `process.version` (for example `"v24.15.0"`) and `process.uptime()`, which returns the seconds since the process started as a decimal number. In `/api/status` I use both and round the uptime with `Math.round`.
 
 ### Sending a response with a specific content type
-_TODO_
+`res.send` with a string sets `Content-Type: text/html` by default. For `/hello`, `/robots.txt` and the non-API 404, I call `res.type('text/plain')` before `res.send`, so the header becomes `text/plain; charset=utf-8`. `res.json` sets `application/json` automatically.
 
 ### Displaying JSON neatly in the page
-_TODO_
+In `public/app.js` I check the `Content-Type` of the response. For JSON I use `JSON.stringify(data, null, 2)`, where the third argument adds two spaces of indentation, and I put the text in a `<pre>` element, which keeps the line breaks and spaces.
 
 ## Challenges
-_TODO_
+The hardest part was route order and the 404 fallback. In Express 4 examples the fallback is written as `app.get('*', ...)`, but Express 5 does not accept this, so I used `app.use` without a path at the end of the file. I only understood why it has to be last after the experiment where I moved it to the top and every page returned 404.
