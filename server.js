@@ -12,6 +12,26 @@ const COURSES = [
   { id: 4, title: 'Software Engineering', credits: 5 },
 ];
 
+// ----- Middleware (registered before all routes) -----
+
+let requestsServed = 0;
+
+// 1) Request logger: one line per request, then pass control on
+function logger(req, res, next) {
+  console.log(`${new Date().toISOString()} ${req.method} ${req.originalUrl}`);
+  next();
+}
+
+// 2) Request counter: counts every request that reaches the server,
+//    including static files and 404s, because it runs before everything else
+function requestCounter(req, res, next) {
+  requestsServed += 1;
+  next();
+}
+
+app.use(logger);
+app.use(requestCounter);
+
 // ----- Routes -----
 
 app.get('/hello', (req, res) => {
@@ -57,6 +77,10 @@ app.post('/api/subscribe', (req, res) => {
 app.get('/api/admin', (req, res) => {
   // 403 Forbidden: the server understood the request but refuses it
   res.status(403).json({ error: 'Forbidden' });
+});
+
+app.get('/api/stats', (req, res) => {
+  res.json({ requestsServed });
 });
 
 app.listen(PORT, () => {
